@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Compteur Premium</title>
+    <style>
+        body {
+            font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 1rem 0;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .counter-container {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            transition: transform 0.3s ease;
+        }
+
+        .counter-container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: #1d1d1f;
+            font-size: 2.2rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #515154;
+            font-size: 0.95rem;
+            margin: 0 0 1.2rem 0;
+            min-height: 1.3em;
+        }
+
+        /* Menus */
+        .menus {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .menu {
+            flex: 1;
+            text-align: left;
+        }
+
+        .menu label {
+            display: block;
+            color: #515154;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .menu select {
+            width: 100%;
+            padding: 0.7rem 0.8rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            font-weight: 600;
+            color: #1d1d1f;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(99, 102, 241, 0.4);
+            border-radius: 12px;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .menu select:focus,
+        .menu select:hover {
+            border-color: #4f46e5;
+        }
+
+        /* Bandeau chrono + record */
+        .infos {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 14px;
+            padding: 0.6rem 0.4rem;
+        }
+
+        .info-box .titre {
+            display: block;
+            font-size: 0.75rem;
+            color: #515154;
+            font-weight: 500;
+        }
+
+        .info-box .valeur {
+            display: block;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1d1d1f;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .info-box .valeur.urgent {
+            color: #e11d48;
+        }
+
+        .number {
+            font-size: 5.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #111 0%, #444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0.8rem 0;
+            font-variant-numeric: tabular-nums;
+            transition: transform 0.05s ease;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 14px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        /* Grande zone de clic pour la souris */
+        #bouton-clic {
+            min-height: 180px;
+            padding: 3rem 2rem;
+            font-size: 1.8rem;
+            border-radius: 20px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.4);
+            transform: scale(1.02);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn.desactive {
+            background: linear-gradient(135deg, #a1a1aa 0%, #71717a 100%);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset {
+            background: transparent;
+            color: #626266;
+            box-shadow: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            border-radius: 10px;
+            width: auto;
+            display: inline-block;
+        }
+
+        .btn-reset:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #1d1d1f;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Résultat avec étoiles et animal */
+        .resultat {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            animation: apparition 0.5s ease;
+        }
+
+        .resultat-animal {
+            font-size: 4.5rem;
+            line-height: 1.1;
+        }
+
+        .resultat-etoiles {
+            font-size: 1.8rem;
+            color: #f59e0b;
+            letter-spacing: 4px;
+        }
+
+        .resultat-nom {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        @keyframes apparition {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .bump {
+            transform: scale(1.1);
+        }
+
+        .record-flash {
+            animation: flash 0.8s ease 3;
+        }
+
+        @keyframes flash {
+            50% { transform: scale(1.12); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="counter-container">
+        <h1>Mon Compteur</h1>
+        <p class="subtitle" id="sous-titre"></p>
+
+        <div class="menus">
+            <div class="menu">
+                <label for="menu-mode">Mode de clic</label>
+                <select id="menu-mode">
+                    <option value="souris">🖱️ Souris</option>
+                    <option value="clavier">⌨️ Clavier</option>
+                </select>
+            </div>
+            <div class="menu">
+                <label for="menu-chrono">Chrono</label>
+                <select id="menu-chrono">
+                    <option value="oui" selected>⏱️ Activé</option>
+                    <option value="non">♾️ Désactivé</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="menus" id="ligne-duree">
+            <div class="menu">
+                <label for="menu-duree">Durée du chrono</label>
+                <select id="menu-duree">
+                    <option value="1">1 seconde</option>
+                    <option value="5">5 secondes</option>
+                    <option value="10">10 secondes</option>
+                    <option value="15">15 secondes</option>
+                    <option value="30" selected>30 secondes</option>
+                    <option value="60">60 secondes</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="infos" id="bloc-infos">
+            <div class="info-box">
+                <span class="titre">⏱️ Temps restant</span>
+                <span class="valeur" id="affichage-temps">30.0</span>
+            </div>
+            <div class="info-box" id="boite-record">
+                <span class="titre">🏆 Meilleur score</span>
+                <span class="valeur" id="affichage-record">0</span>
+            </div>
+        </div>
+
+        <div class="number" id="affichage-compteur">0</div>
+
+        <!-- Résultat final (uniquement pour le chrono de 5 secondes) -->
+        <div class="resultat" id="resultat" style="display:none">
+            <div class="resultat-animal" id="resultat-animal"></div>
+            <div class="resultat-etoiles" id="resultat-etoiles"></div>
+            <div class="resultat-nom" id="resultat-nom"></div>
+        </div>
+
+        <button class="btn" id="bouton-clic">Cliquez ici</button>
+        <button class="btn btn-reset" id="bouton-reset">Réinitialiser</button>
+    </div>
+
+    <script>
+        // ----- État du jeu -----
+        let nombreDeClics = 0;
+        let mode = 'souris';          // 'souris' ou 'clavier'
+        let duree = 30;               // en secondes
+        let chronoActif = true;       // true = avec chrono, false = mode libre
+        let etat = 'attente';         // 'attente' | 'enCours' | 'fini'
+        let finDuJeu = 0;             // timestamp de fin
+        let intervalle = null;
+
+        // ----- Éléments -----
+        const affichage = document.getElementById('affichage-compteur');
+        const boutonClic = document.getElementById('bouton-clic');
+        const boutonReset = document.getElementById('bouton-reset');
+        const menuMode = document.getElementById('menu-mode');
+        const menuDuree = document.getElementById('menu-duree');
+        const menuChrono = document.getElementById('menu-chrono');
+        const ligneDuree = document.getElementById('ligne-duree');
+        const blocInfos = document.getElementById('bloc-infos');
+        const sousTitre = document.getElementById('sous-titre');
+        const affichageTemps = document.getElementById('affichage-temps');
+        const affichageRecord = document.getElementById('affichage-record');
+        const boiteRecord = document.getElementById('boite-record');
+
+        // ----- Meilleur score (un record par durée, sauvegardé dans le navigateur) -----
+        function lireRecord(d) {
+            try {
+                return parseInt(localStorage.getItem('compteur-record-' + d), 10) || 0;
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function ecrireRecord(d, score) {
+            try {
+                localStorage.setItem('compteur-record-' + d, String(score));
+            } catch (e) {
+                // stockage indisponible : le record ne sera pas gardé après fermeture
+            }
+        }
+
+        function afficherRecord() {
+            affichageRecord.textContent = lireRecord(duree);
+        }
+
+        // ----- Affichage -----
+        function afficherTemps(secondes) {
+            affichageTemps.textContent = secondes.toFixed(1);
+            affichageTemps.classList.toggle('urgent', etat === 'enCours' && secondes <= 5);
+        }
+
+        function messageAttente() {
+            if (!chronoActif) {
+                sousTitre.textContent = 'Mode libre : clique autant que tu veux, sans limite de temps !';
+            } else if (mode === 'souris') {
+                sousTitre.textContent = 'Le chrono démarre au premier clic !';
+            } else {
+                sousTitre.textContent = 'Le chrono démarre à la première pression (Espace, Entrée ou ↑) !';
+            }
+        }
+
+        function appliquerMode() {
+            if (mode === 'souris') {
+                boutonClic.textContent = 'Cliquez ici';
+                boutonClic.classList.remove('desactive');
+            } else {
+                boutonClic.textContent = 'Appuyez sur Espace / Entrée / ↑';
+                boutonClic.classList.add('desactive');
+            }
+            if (etat === 'attente') messageAttente();
+        }
+
+        // ----- Logique du jeu -----
+        function demarrer() {
+            etat = 'enCours';
+            sousTitre.textContent = 'Go ! Clique le plus vite possible !';
+            finDuJeu = performance.now() + duree * 1000;
+            intervalle = setInterval(tick, 50);
+        }
+
+        function tick() {
+            const restant = (finDuJeu - performance.now()) / 1000;
+            if (restant <= 0) {
+                terminer();
+            } else {
+                afficherTemps(restant);
+            }
+        }
+
+        function terminer() {
+            clearInterval(intervalle);
+            intervalle = null;
+            etat = 'fini';
+            afficherTemps(0);
+
+            const ancienRecord = lireRecord(duree);
+            if (nombreDeClics > ancienRecord) {
+                ecrireRecord(duree, nombreDeClics);
+                afficherRecord();
+                sousTitre.textContent = '🎉 Nouveau record : ' + nombreDeClics + ' clics en ' + duree + ' s !';
+                boiteRecord.classList.remove('record-flash');
+                void boiteRecord.offsetWidth; // relance l'animation
+                boiteRecord.classList.add('record-flash');
+            } else {
+                sousTitre.textContent = '⏱️ Temps écoulé ! Score : ' + nombreDeClics + ' (record : ' + ancienRecord + ')';
+            }
+
+            afficherNote(nombreDeClics);
+        }
+
+        // Note finale (étoiles + animal) pour le chrono de 5 secondes
+        function afficherNote(score) {
+            let etoiles, animal, nom;
+
+            // Seuils par durée (en clics) : [1 étoile, 2 étoiles, 3 étoiles, 4 étoiles, 5 étoiles]
+            const tableSeuils = {
+                1:  [5, 6, 7, 8, 10],
+                5:  [20, 25, 30, 35, 45],
+                10: [40, 50, 55, 65, 85],
+                15: [55, 70, 80, 95, 120],
+                30: [100, 130, 155, 180, 230],
+                60: [190, 240, 290, 335, 430]
+            };
+            const s = tableSeuils[duree];
+
+            if (score >= s[4])      { etoiles = 5; animal = '🦅'; nom = 'Faucon'; }
+            else if (score >= s[3]) { etoiles = 4; animal = '🐆'; nom = 'Léopard'; }
+            else if (score >= s[2]) { etoiles = 3; animal = '🐇'; nom = 'Lapin'; }
+            else if (score >= s[1]) { etoiles = 2; animal = '🐌'; nom = 'Escargot'; }
+            else if (score >= s[0]) { etoiles = 1; animal = '🐢'; nom = 'Tortue'; }
+            else                    { etoiles = 0; animal = '🐨'; nom = 'Koala'; }
+
+            document.getElementById('resultat-animal').textContent = animal;
+            document.getElementById('resultat-etoiles').textContent = '★'.repeat(etoiles) + '☆'.repeat(5 - etoiles);
+            document.getElementById('resultat-nom').textContent = nom + ' — ' + etoiles + ' étoile' + (etoiles > 1 ? 's' : '');
+            document.getElementById('resultat').style.display = '';
+        }
+
+        function reinitialiser() {
+            clearInterval(intervalle);
+            intervalle = null;
+            etat = 'attente';
+            nombreDeClics = 0;
+            affichage.textContent = 0;
+            afficherTemps(duree);
+            afficherRecord();
+            boiteRecord.classList.remove('record-flash');
+            document.getElementById('resultat').style.display = 'none';
+            messageAttente();
+        }
+
+        function incrementer() {
+            if (etat === 'fini') return;        // plus de clics après la fin
+            if (etat === 'attente' && chronoActif) demarrer(); // le premier clic lance le chrono (si activé)
+
+            nombreDeClics = nombreDeClics + 1;
+            affichage.textContent = nombreDeClics;
+
+            affichage.classList.add('bump');
+            setTimeout(() => {
+                affichage.classList.remove('bump');
+            }, 50);
+        }
+
+        // ----- Événements -----
+        menuMode.addEventListener('change', () => {
+            mode = menuMode.value;
+            appliquerMode();
+            menuMode.blur();
+        });
+
+        menuChrono.addEventListener('change', () => {
+            chronoActif = (menuChrono.value === 'oui');
+            // En mode libre, on cache la durée, le temps et le record
+            ligneDuree.style.display = chronoActif ? '' : 'none';
+            blocInfos.style.display = chronoActif ? '' : 'none';
+            reinitialiser();
+            menuChrono.blur();
+        });
+
+        menuDuree.addEventListener('change', () => {
+            duree = parseInt(menuDuree.value, 10);
+            reinitialiser();   // changer la durée relance une nouvelle partie
+            menuDuree.blur();
+        });
+
+        boutonClic.addEventListener('click', (e) => {
+            if (mode !== 'souris') return;
+            if (e.detail === 0) return; // clic provoqué par le clavier : ignoré
+            incrementer();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (mode !== 'clavier') return;
+            if (e.target === menuMode || e.target === menuDuree || e.target === menuChrono) return;
+            if (e.repeat) return;
+            if (e.code === 'Space' || e.key === 'Enter' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                incrementer();
+            }
+        });
+
+        boutonReset.addEventListener('click', () => {
+            reinitialiser();
+            boutonReset.blur(); // évite qu'Espace/Entrée relance le reset en mode clavier
+        });
+
+        // ----- Initialisation -----
+        appliquerMode();
+        reinitialiser();
+    </script>
+
+    <!-- Statistiques de visites (GoatCounter) -->
+    <script data-goatcounter="https://yutaa.goatcounter.com/count"
+            async src="https://gc.zgo.at/count.js"></script>
+
+</body>
+</html>
