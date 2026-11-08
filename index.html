@@ -288,6 +288,41 @@
             to { transform: scale(1); opacity: 1; }
         }
 
+        /* Ondes violettes au clic */
+        .onde {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border-radius: 50%;
+            border: 3px solid rgba(167, 139, 250, 0.9);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.8), inset 0 0 12px rgba(139, 92, 246, 0.5);
+            pointer-events: none;
+            z-index: 50;
+            animation: onde 0.7s ease-out forwards;
+        }
+
+        @keyframes onde {
+            from { transform: scale(0.2); opacity: 0.95; }
+            to { transform: scale(5); opacity: 0; }
+        }
+
+        /* Mini confettis de fin de partie */
+        .confetti {
+            position: fixed;
+            top: -12px;
+            width: 6px;
+            height: 10px;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 60;
+            animation: chute linear forwards;
+        }
+
+        @keyframes chute {
+            to { transform: translate(var(--dx), 105vh) rotate(var(--rot)); }
+        }
+
         .bump {
             transform: scale(1.1);
         }
@@ -470,6 +505,7 @@
             }
 
             afficherNote(nombreDeClics);
+            lancerConfettis();
         }
 
         // Note finale (étoiles + animal) pour le chrono de 5 secondes
@@ -513,8 +549,45 @@
             messageAttente();
         }
 
-        function incrementer() {
+        // Mini confettis qui tombent à la fin du chrono
+        function lancerConfettis() {
+            const couleurs = ['#8b5cf6', '#a78bfa', '#c4b5fd', '#6366f1', '#3b82f6', '#60a5fa', '#ffffff', '#f472b6'];
+            for (let i = 0; i < 60; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.background = couleurs[Math.floor(Math.random() * couleurs.length)];
+                c.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px');
+                c.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+                c.style.animationDuration = (1.8 + Math.random() * 1.4) + 's';
+                c.style.animationDelay = (Math.random() * 0.4) + 's';
+                c.addEventListener('animationend', () => c.remove());
+                document.body.appendChild(c);
+            }
+        }
+
+        // Onde violette : à l'endroit du clic (souris) ou au centre du bouton (clavier)
+        function creerOnde(x, y) {
+            if (x === undefined || y === undefined) {
+                const r = boutonClic.getBoundingClientRect();
+                x = r.left + r.width / 2;
+                y = r.top + r.height / 2;
+            }
+            // Deux ondes décalées pour un effet plus joli
+            [0, 0.12].forEach((delai) => {
+                const onde = document.createElement('div');
+                onde.className = 'onde';
+                onde.style.left = x + 'px';
+                onde.style.top = y + 'px';
+                onde.style.animationDelay = delai + 's';
+                onde.addEventListener('animationend', () => onde.remove());
+                document.body.appendChild(onde);
+            });
+        }
+
+        function incrementer(x, y) {
             if (etat === 'fini') return;        // plus de clics après la fin
+            creerOnde(x, y);
             if (etat === 'attente' && chronoActif) demarrer(); // le premier clic lance le chrono (si activé)
 
             nombreDeClics = nombreDeClics + 1;
@@ -551,7 +624,7 @@
         boutonClic.addEventListener('click', (e) => {
             if (mode !== 'souris') return;
             if (e.detail === 0) return; // clic provoqué par le clavier : ignoré
-            incrementer();
+            incrementer(e.clientX, e.clientY);
         });
 
         document.addEventListener('keydown', (e) => {
