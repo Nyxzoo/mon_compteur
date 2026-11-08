@@ -75,13 +75,13 @@
         }
 
         .counter-container {
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(10, 10, 18, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             padding: 2.5rem 2rem;
             border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.15);
             text-align: center;
             max-width: 420px;
             width: 90%;
@@ -93,7 +93,7 @@
         }
 
         h1 {
-            color: #1d1d1f;
+            color: #ffffff;
             font-size: 2.2rem;
             margin: 0 0 0.5rem 0;
             font-weight: 700;
@@ -101,7 +101,7 @@
         }
 
         .subtitle {
-            color: #515154;
+            color: #b4b4c7;
             font-size: 0.95rem;
             margin: 0 0 1.2rem 0;
             min-height: 1.3em;
@@ -121,7 +121,7 @@
 
         .menu label {
             display: block;
-            color: #515154;
+            color: #b4b4c7;
             font-size: 0.8rem;
             font-weight: 500;
             margin-bottom: 0.3rem;
@@ -133,9 +133,10 @@
             font-size: 0.95rem;
             font-family: inherit;
             font-weight: 600;
-            color: #1d1d1f;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid rgba(99, 102, 241, 0.4);
+            color: #ffffff;
+            color-scheme: dark;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(139, 92, 246, 0.5);
             border-radius: 12px;
             cursor: pointer;
             outline: none;
@@ -144,7 +145,12 @@
 
         .menu select:focus,
         .menu select:hover {
-            border-color: #4f46e5;
+            border-color: #8b5cf6;
+        }
+
+        .menu select option {
+            background: #111118;
+            color: #ffffff;
         }
 
         /* Bandeau chrono + record */
@@ -156,7 +162,7 @@
 
         .info-box {
             flex: 1;
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.07);
             border-radius: 14px;
             padding: 0.6rem 0.4rem;
         }
@@ -164,7 +170,7 @@
         .info-box .titre {
             display: block;
             font-size: 0.75rem;
-            color: #515154;
+            color: #b4b4c7;
             font-weight: 500;
         }
 
@@ -172,7 +178,7 @@
             display: block;
             font-size: 1.6rem;
             font-weight: 700;
-            color: #1d1d1f;
+            color: #ffffff;
             font-variant-numeric: tabular-nums;
         }
 
@@ -183,7 +189,7 @@
         .number {
             font-size: 5.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #111 0%, #444 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin: 0.8rem 0;
@@ -233,7 +239,7 @@
 
         .btn-reset {
             background: transparent;
-            color: #626266;
+            color: #b4b4c7;
             box-shadow: none;
             padding: 0.8rem 1.5rem;
             font-size: 0.95rem;
@@ -245,15 +251,15 @@
         }
 
         .btn-reset:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: #1d1d1f;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
             box-shadow: none;
             transform: none;
         }
 
         /* Résultat avec étoiles et animal */
         .resultat {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 0.8rem;
             margin-bottom: 1rem;
@@ -274,7 +280,7 @@
         .resultat-nom {
             font-size: 1rem;
             font-weight: 600;
-            color: #1d1d1f;
+            color: #ffffff;
         }
 
         @keyframes apparition {
