@@ -407,6 +407,12 @@
         let finDuJeu = 0;             // timestamp de fin
         let intervalle = null;
 
+        // ----- Détection d'autoclicker (réglages) -----
+        const MAX_CLICS_PAR_SEC = 22;     // au-delà de 22 clics dans la même seconde : suspect
+        const NB_INTERVALLES = 20;        // nombre de clics analysés pour la régularité
+        const SEUIL_REGULARITE = 0.05;    // plus c'est petit, plus il faut un rythme "robotique" pour être détecté
+        let tempsClics = [];              // moments des derniers clics
+
         // ----- Éléments -----
         const affichage = document.getElementById('affichage-compteur');
         const boutonClic = document.getElementById('bouton-clic');
@@ -540,6 +546,7 @@
             clearInterval(intervalle);
             intervalle = null;
             etat = 'attente';
+            tempsClics = [];
             nombreDeClics = 0;
             affichage.textContent = 0;
             afficherTemps(duree);
@@ -547,6 +554,56 @@
             boiteRecord.classList.remove('record-flash');
             document.getElementById('resultat').style.display = 'none';
             messageAttente();
+        }
+
+        // Détection d'autoclicker : renvoie true si le clic paraît automatique
+        function estTriche(estTruste) {
+            // 1) Clic généré par un script (pas par une vraie souris / un vrai clavier)
+            if (estTruste === false) return true;
+
+            const maintenant = performance.now();
+            tempsClics.push(maintenant);
+            if (tempsClics.length > 40) tempsClics.shift();
+
+            // 2) Trop de clics dans la dernière seconde
+            let dansLaSeconde = 0;
+            for (let i = tempsClics.length - 1; i >= 0; i--) {
+                if (maintenant - tempsClics[i] <= 1000) {
+                    dansLaSeconde++;
+                } else {
+                    break;
+                }
+            }
+            if (dansLaSeconde > MAX_CLICS_PAR_SEC) return true;
+
+            // 3) Rythme trop régulier (un humain n'est jamais parfaitement régulier)
+            if (tempsClics.length > NB_INTERVALLES) {
+                const derniers = tempsClics.slice(-(NB_INTERVALLES + 1));
+                const intervalles = [];
+                for (let i = 1; i < derniers.length; i++) {
+                    intervalles.push(derniers[i] - derniers[i - 1]);
+                }
+                const moyenne = intervalles.reduce((a, b) => a + b, 0) / intervalles.length;
+                const variance = intervalles.reduce((a, b) => a + (b - moyenne) * (b - moyenne), 0) / intervalles.length;
+                const ecartType = Math.sqrt(variance);
+                if (moyenne < 300 && ecartType / moyenne < SEUIL_REGULARITE) return true;
+            }
+
+            return false;
+        }
+
+        // Autoclicker détecté : on arrête tout et on annule la partie
+        function declarerTriche() {
+            clearInterval(intervalle);
+            intervalle = null;
+            etat = 'triche';
+            tempsClics = [];
+            nombreDeClics = 0;
+            affichage.textContent = 0;
+            affichageTemps.textContent = '--';
+            affichageTemps.classList.remove('urgent');
+            document.getElementById('resultat').style.display = 'none';
+            sousTitre.textContent = '🚫 Autoclicker détecté : partie annulée, score non enregistré. Clique sur Réinitialiser pour rejouer.';
         }
 
         // Mini confettis qui tombent à la fin du chrono
@@ -585,8 +642,12 @@
             });
         }
 
-        function incrementer(x, y) {
-            if (etat === 'fini') return;        // plus de clics après la fin
+        function incrementer(x, y, estTruste) {
+            if (etat === 'fini' || etat === 'triche') return;   // plus de clics après la fin ou après une triche
+            if (estTriche(estTruste)) {
+                declarerTriche();
+                return;
+            }
             creerOnde(x, y);
             if (etat === 'attente' && chronoActif) demarrer(); // le premier clic lance le chrono (si activé)
 
@@ -624,7 +685,7 @@
         boutonClic.addEventListener('click', (e) => {
             if (mode !== 'souris') return;
             if (e.detail === 0) return; // clic provoqué par le clavier : ignoré
-            incrementer(e.clientX, e.clientY);
+            incrementer(e.clientX, e.clientY, e.isTrusted);
         });
 
         document.addEventListener('keydown', (e) => {
@@ -633,7 +694,7 @@
             if (e.repeat) return;
             if (e.code === 'Space' || e.key === 'Enter' || e.key === 'ArrowUp') {
                 e.preventDefault();
-                incrementer();
+                incrementer(undefined, undefined, e.isTrusted);
             }
         });
 
